@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+
+# Build artifacts
+*.o
+*.out
+*.a
+*.so
+*.dylib
+*.exe
+
+# Debug symbols
+*.dSYM/
+
+# Build directories
+build/
+cmake-build-*/
