@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "configurations":[
+        {
+            "name": "LLDB: debug active C binary",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "C: build active file (clang)",
+            "stopOnEntry": false
+        }
+    ]
+}

@@ -2,7 +2,11 @@
 .DS_Store
 
 # Editor
-.vscode/
+.vscode/*
+
+# Commit project-level tasks and launch configs
+!.vscode/tasks.json
+!.vscode/launch.json
 
 # Build artifacts
 *.o
@@ -18,3 +22,4 @@
 # Build directories
 build/
 cmake-build-*/
+*.dSYM
