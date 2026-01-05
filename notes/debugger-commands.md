@@ -40,6 +40,16 @@ This file tracks the LLDB commands used trhoughout the exercises.
 
 ---
 
+## - Addresses - Observing memory location
+
+#### Print the address of a variable
+- Show the memory address where a variable lives:
+    - `p &variable`
+
+#### Print a variable's value
+- Show the value of a given variable (works also for pointers)
+    - `p variable`
+
 ## Common
 
 #### Exit
