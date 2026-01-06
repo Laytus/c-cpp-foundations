@@ -40,7 +40,7 @@ This file tracks the LLDB commands used trhoughout the exercises.
 
 ---
 
-## - Addresses - Observing memory location
+## 3 - Addresses - Observing memory location
 
 #### Print the address of a variable
 - Show the memory address where a variable lives:
@@ -49,6 +49,20 @@ This file tracks the LLDB commands used trhoughout the exercises.
 #### Print a variable's value
 - Show the value of a given variable (works also for pointers)
     - `p variable`
+
+---
+
+## 4 - Pointers and Dereferencing
+
+#### Print a pointer's stored address
+- Show the address stored inside a pointer:
+    - `p pointer`
+
+#### Dereference a pointer
+- Show the value stored at the address pointed to by a pointer:
+    - `p *pointer`
+
+---
 
 ## Common
 
