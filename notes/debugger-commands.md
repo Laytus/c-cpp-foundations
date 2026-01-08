@@ -64,6 +64,14 @@ This file tracks the LLDB commands used trhoughout the exercises.
 
 ---
 
+## 5 – Arrays
+
+#### Print the address of an array element
+- Show where a specific of an array element
+    - `p &array[index]`
+
+---
+
 ## Common
 
 #### Exit
