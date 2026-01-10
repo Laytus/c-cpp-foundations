@@ -72,6 +72,14 @@ This file tracks the LLDB commands used trhoughout the exercises.
 
 ---
 
+## 6 – Strings
+
+#### Inspect individual characters
+- Print a specific character in a string:
+    - `p s[index]`
+
+---
+
 ## Common
 
 #### Exit
