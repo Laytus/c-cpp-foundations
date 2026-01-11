@@ -14,9 +14,9 @@
 - [x] 3. Lifetime vs scope
 - [x] 4. Addresses
 - [x] 5. Pointers (conceptual)
-- [ ] 6. Dereferencing pointers
-- [ ] 7. Pointer validity & first real UB
-- [ ] 8. Passing pointers to functions
+- [x] 6. Dereferencing pointers
+- [x] 7. Pointer validity & first real UB
+- [x] 8. Passing pointers to functions
 
 ---
 
@@ -27,11 +27,11 @@
 **Estimated time:** **4-5 days**
 
 **Lessons**
-- [ ] 1. Arrays vs contiguous memory
-- [ ] 2. Arrays vs pointers (why they're related but not identical)
-- [ ] 3. Passing arrays to functions
-- [ ] 4. Off-by-one errors and bounds
-- [ ] 5. Strings as arrays (`char[]`)
+- [x] 1. Arrays as contiguous memory
+- [x] 2. Arrays vs pointers (why they're related but not identical)
+- [x] 3. Passing arrays to functions
+- [x] 4. Off-by-one errors and bounds
+- [x] 5. Strings as arrays (`char[]`)
 - [ ] 6. Common array bugs (and how to debug them)
 - [ ] 7. Const correctness (intro)
 
