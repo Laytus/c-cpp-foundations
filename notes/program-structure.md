@@ -32,8 +32,8 @@
 - [x] 3. Passing arrays to functions
 - [x] 4. Off-by-one errors and bounds
 - [x] 5. Strings as arrays (`char[]`)
-- [ ] 6. Common array bugs (and how to debug them)
-- [ ] 7. Const correctness (intro)
+- [x] 6. Common array bugs (and how to debug them)
+- [x] 7. Const correctness (intro)
 
 ---
 
