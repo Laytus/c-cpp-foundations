@@ -44,13 +44,17 @@
 **Estimated time:** **4-5 days**
 
 **Lessons**
-- [ ] 1. Stack vs heap (conceptual)
-- [ ] 2. `malloc`/`free``
-- [ ] 3. Ownership rules
-- [ ] 4. Memory leaks
-- [ ] 5. Double-free and use-after-free
-- [ ] 6. Designing safe APIs in C
-- [ ] 7. Debugging heap issues with sanitizers
+- [x] 1. Dynamic Memory Basics – The Heap
+- [x] 2. `malloc` – Allocating Memory
+- [ ] 3. Ownership and Responsability
+- [ ] 4. `free` – Releasing Memory
+- [ ] 5. `Use-After-Free` & Dangling Pointers
+- [ ] 6. Memory Leaks
+- [ ] 7. Dynamic Arrays (Heap-Allocated Arrays)
+- [ ] 8. `realloc` – Resizing Allocations
+- [ ] 9. `calloc` – Zero-Initialized Memory
+- [ ] 10. Common Dynamic Memory Bugs (and How to Debug Them)
+- [ ] 11. Const + Dynamic Memory (Read-only Ownership)
 
 ---
 
