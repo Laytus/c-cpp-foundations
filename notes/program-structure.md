@@ -50,9 +50,9 @@
 - [x] 4. `free` – Releasing Memory
 - [x] 5. `Use-After-Free` & Dangling Pointers
 - [x] 6. Memory Leaks
-- [ ] 7. Dynamic Arrays (Heap-Allocated Arrays)
-- [ ] 8. `realloc` – Resizing Allocations
-- [ ] 9. `calloc` – Zero-Initialized Memory
+- [x] 7. Dynamic Arrays (Heap-Allocated Arrays)
+- [x] 8. `realloc` – Resizing Allocations
+- [x] 9. `calloc` – Zero-Initialized Memory
 - [ ] 10. Common Dynamic Memory Bugs (and How to Debug Them)
 - [ ] 11. Const + Dynamic Memory (Read-only Ownership)
 
