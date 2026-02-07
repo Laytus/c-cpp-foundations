@@ -46,10 +46,10 @@
 **Lessons**
 - [x] 1. Dynamic Memory Basics – The Heap
 - [x] 2. `malloc` – Allocating Memory
-- [ ] 3. Ownership and Responsability
-- [ ] 4. `free` – Releasing Memory
-- [ ] 5. `Use-After-Free` & Dangling Pointers
-- [ ] 6. Memory Leaks
+- [x] 3. Ownership and Responsability
+- [x] 4. `free` – Releasing Memory
+- [x] 5. `Use-After-Free` & Dangling Pointers
+- [x] 6. Memory Leaks
 - [ ] 7. Dynamic Arrays (Heap-Allocated Arrays)
 - [ ] 8. `realloc` – Resizing Allocations
 - [ ] 9. `calloc` – Zero-Initialized Memory
