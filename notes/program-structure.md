@@ -53,8 +53,8 @@
 - [x] 7. Dynamic Arrays (Heap-Allocated Arrays)
 - [x] 8. `realloc` – Resizing Allocations
 - [x] 9. `calloc` – Zero-Initialized Memory
-- [ ] 10. Common Dynamic Memory Bugs (and How to Debug Them)
-- [ ] 11. Const + Dynamic Memory (Read-only Ownership)
+- [x] 10. Common Dynamic Memory Bugs (and How to Debug Them)
+- [x] 11. Const + Dynamic Memory (Read-only Ownership)
 
 ---
 
