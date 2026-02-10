@@ -65,13 +65,14 @@
 **Estimated time:** **4-6 days**
 
 **Lessons**
-- [ ] 1. `struct` as data layout
-- [ ] 2. Passing structs (by value vs pointer)
-- [ ] 3. Headers (.h) and implementation (.c)
-- [ ] 4. Compilation units
-- [ ] 5. Include guards
-- [ ] 6. Project structure
-- [ ] 7. Error handling patterns
+- [x] 1. `struct` as data layout
+- [x] 2. Passing structs (by value vs pointer)
+- [ ] 3. Initialization and destruction patterns
+- [ ] 4. Headers (.h) and implementation (.c)
+- [ ] 5. Compilation units
+- [ ] 6. Include guards
+- [ ] 7. Project structure
+- [ ] 8. Error handling patterns
 
 ---
 
