@@ -67,10 +67,10 @@
 **Lessons**
 - [x] 1. `struct` as data layout
 - [x] 2. Passing structs (by value vs pointer)
-- [ ] 3. Initialization and destruction patterns
-- [ ] 4. Headers (.h) and implementation (.c)
-- [ ] 5. Compilation units
-- [ ] 6. Include guards
+- [x] 3. Initialization and destruction patterns
+- [x] 4. Headers (.h) and implementation (.c)
+- [x] 5. Compilation units
+- [x] 6. Include guards
 - [ ] 7. Project structure
 - [ ] 8. Error handling patterns
 
