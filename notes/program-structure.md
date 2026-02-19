@@ -71,8 +71,8 @@
 - [x] 4. Headers (.h) and implementation (.c)
 - [x] 5. Compilation units
 - [x] 6. Include guards
-- [ ] 7. Project structure
-- [ ] 8. Error handling patterns
+- [x] 7. Project structure
+- [x] 8. Error handling patterns
 
 ---
 
