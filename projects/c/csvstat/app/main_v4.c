@@ -15,6 +15,11 @@ typedef struct {
 
 // Print usage to stderr
 static void usage(FILE *out, const char *prog) {
+    /*
+    FILE *out:
+    - stdout: for --help
+    - stderr: for argument errors
+    */
     fprintf(out, 
         "csvstat – compute streaming stats for a numeric CSV column (v1)\n\n"
         "Usage:\n"
@@ -24,22 +29,29 @@ static void usage(FILE *out, const char *prog) {
         "Options:\n"
         "  --file <path>     Input CSV file\n"
         "  --col  <name>     Column name (must exist in header row)\n"
-        "  --quiet           Surpress non-fatal warnings\n"
+        "  --quiet           Suppress non-fatal warnings\n"
         "  --help            Show this help\n",
         prog, prog, prog
     );
 }
 
 static int parse_cli(int argc, char **argv, CliOptions *opt) {
+    /*
+    int argc: argument count
+    char **argv: array of argument strings
+    CliOptions *opt: pointer to struct where parsed values will be stored
+    */
+
     if (!opt) return -1;
 
+    // Initialize defaults
     opt->file_path = NULL;
     opt->col_name = NULL;
     opt->quiet = 0;
 
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
         usage(stdout, argv[0]);
-        return 1; // "help shown" (not an error)
+        return 1; // Help was printed; main() should exit normally.
     }
 
     // Backward-compatible positional form: csvstat file col
@@ -111,12 +123,14 @@ Returns:
 - -1 on failure
 */
 static int parse_double_strict(const char *s, double *out) {
+    // Null checks
     if (!s || !out) return -1;
 
     // Reject empty string
     if (s[0] == '\0') return -1;
 
     char *end = NULL;
+    errno = 0;
     double v = strtod(s, &end);
 
     // No conversion performed
@@ -128,7 +142,7 @@ static int parse_double_strict(const char *s, double *out) {
     // Any remaining characters => invalid numeric token
     if (*end != '\0') return -1;
 
-    // Treat ERANGE as invalid (overflow/underflow)
+    // Treat ERANGE as invalid (overflow/underflow) - Number too large
     if (errno == ERANGE) return -1;
 
     *out = v;
@@ -171,7 +185,7 @@ int main(int argc, char **argv) {
     // ---- Read header (skip empty lines) ----
     CsvRowView header = (CsvRowView){0};
     size_t col_index = 0;
-    int got_header = 0;
+    // int got_header = 0;
 
     for (;;) {
         int rc = line_reader_next(&lr, &line, &len);
@@ -212,17 +226,17 @@ int main(int argc, char **argv) {
             return 8;
         }
 
-        got_header = 1;
+        // got_header = 1;
         break;
     }
 
-    if (!got_header) {
-        fprintf(stderr, "Failed to read header\n");
-        csv_parser_destroy(&parser);
-        line_reader_destroy(&lr);
-        fclose(fp);
-        return 9;
-    }
+    // if (!got_header) {
+    //     fprintf(stderr, "Failed to read header\n");
+    //     csv_parser_destroy(&parser);
+    //     line_reader_destroy(&lr);
+    //     fclose(fp);
+    //     return 9;
+    // }
 
     // ---- Stream rows and accumulate stats ----
     Stats st;
@@ -262,10 +276,12 @@ int main(int argc, char **argv) {
         rows_seen++;
 
         if (col_index >= row.nfields) {
-            // Row has fewer fields than header. For v1: skip quietly or warn.
-            // We'll warn and continue.
+            // Row has fewer fields than the header (v1 behavior: skip; optionally warn).
             missing_col++;
             fprintf(stderr, "Row %zu: missing column %s\n", row_no, col_name);
+            if (!opt.quiet) {
+                fprintf(stderr, "Row %zu: missing column %s\n", row_no, col_name);
+            }
             row_no++;
             continue;
         }
@@ -275,6 +291,9 @@ int main(int argc, char **argv) {
 
         if (parse_double_strict(cell, &x) != 0) {
             numeric_bad++;
+            if (!opt.quiet) {
+                fprintf(stderr, "Row %zu: invalid number '%s'\n", row_no, cell);
+            }
             row_no++;
             continue;
         }
@@ -287,12 +306,13 @@ int main(int argc, char **argv) {
             return 12;
         }
         
-        printf("%s\n", row.fields[col_index]);
+        // printf("%s\n", row.fields[col_index]);
         numeric_ok++;
         row_no++;
     }
 
     // ---- Print summary ----
+    printf("file: %s\n", path);
     printf("column: %s\n", col_name);
     printf("rows_seen: %zu\n", rows_seen);
     printf("missing_column: %zu\n", missing_col);
