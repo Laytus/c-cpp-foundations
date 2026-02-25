@@ -39,9 +39,11 @@ typedef struct {
 //     +-- fields[2] → "10"
 
 typedef struct {
-    const char **scratch; // owned scratch array storage
-    size_t cap;           // capacity (#pointers)
+  const char **scratch; // owned scratch array storage
+  size_t cap;           // capacity (#pointers)
 } CsvParser;
+
+int csv_parser_is_valid(const CsvParser *p);
 
 /*
 Initialize parser scratch storage.

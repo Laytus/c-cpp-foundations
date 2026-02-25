@@ -46,6 +46,8 @@ typedef struct LineReader {
     int     saw_oef;  // sticky EOF: once EOF is seen, further reads return EOF
 } LineReader;
 
+int line_reader_is_valid(const LineReader *lr);
+
 /*
 Initialize a LineReader bound to an existing FILE*.
 
