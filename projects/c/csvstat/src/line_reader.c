@@ -32,7 +32,7 @@ typedef struct LineReader {
     char    *buf;     // owned internal buffer
     size_t  len;      // current line length (after stripping newline/CR)
     size_t  cap;      // buffer capacity in bytes
-    int     saw_oef;  // sticky EOF: once EOF is seen, further reads return EOF
+    int     saw_eof;  // sticky EOF: once EOF is seen, further reads return EOF
 } LineReader;
 */
 
@@ -94,7 +94,7 @@ int line_reader_init(LineReader *lr, FILE *fp) {
     lr->buf = NULL;
     lr->len = 0;
     lr->cap = 0;
-    lr->saw_oef = 0;
+    lr->saw_eof = 0;
 
     // Allocate an initial buffer once; avoid first-call realloc churn.
     if (ensure_capacity(lr, 128) != 0) {
@@ -118,9 +118,9 @@ void line_reader_destroy(LineReader *lr) {
     lr->len = 0;
     lr->cap = 0;
 
-    // We doo not own `fp`, se we do not `fclose()`.
+    // We do not own `fp`, se we do not `fclose()`.
     lr->fp = NULL;
-    lr->saw_oef = 0;
+    lr->saw_eof = 0;
 
     // After destroy, invariants still hold
     CSVSTAT_ASSERT(line_reader_is_valid(lr));
@@ -136,7 +136,7 @@ int line_reader_next(LineReader *lr, const char **out_line, size_t *out_len) {
     if (out_len) *out_len = 0;
 
     // If we have already seen EOF previously, behave consistently.
-    if (lr->saw_oef) {
+    if (lr->saw_eof) {
         return 1; // already at EOF
     }
 
@@ -167,7 +167,7 @@ int line_reader_next(LineReader *lr, const char **out_line, size_t *out_len) {
                 return -1; // I/O error
             }
 
-            lr->saw_oef = 1;
+            lr->saw_eof = 1;
 
             if (lr->len == 0) {
                 // True EOF with no buffered characters => no more lines.

@@ -25,7 +25,7 @@ static void usage(FILE *out, const char *prog) {
     fprintf(out, 
         "csvstat – compute streaming stats for a numeric CSV column (v1)\n\n"
         "Usage:\n"
-        "  %s <csv-file> <column-name>\n"
+        "  %s <csv-file> <column-name> [--quiet]\n"
         "  %s --file <csv-file> --col <column-name> [--quiet]\n"
         "  %s --help\n\n"
         "Options:\n"
@@ -51,48 +51,74 @@ static int parse_cli(int argc, char **argv, CliOptions *opt) {
     opt->col_name = NULL;
     opt->quiet = 0;
 
-    if (argc == 2 && strcmp(argv[1], "--help") == 0) {
-        usage(stdout, argv[0]);
-        return 1; // Help was printed; main() should exit normally.
-    }
+    // if (argc == 2 && strcmp(argv[1], "--help") == 0) {
+    //     usage(stdout, argv[0]);
+    //     return 1; // Help was printed; main() should exit normally.
+    // }
+    int positional_count = 0;
+    int saw_flag_file = 0;
+    int saw_flag_col = 0;
 
     // Backward-compatible positional form: csvstat file col
-    if (argc == 3 && argv[1][0] != '-') {
-        opt->file_path = argv[1];
-        opt->col_name = argv[2];
-        return 0;
-    }
+    // if (argc == 3 && argv[1][0] != '-') {
+    //     opt->file_path = argv[1];
+    //     opt->col_name = argv[2];
+    //     return 0;
+    // }
 
     // Flag-based form
     for (int i = 1; i < argc; i++) {
         const char *a = argv[i];
 
         if (strcmp(a, "--help") == 0) {
-            usage(stdout, argv[0]);
-            return 1;
+            // usage(stdout, argv[0]);
+            // return 1;
+            if (argc == 2) {
+                usage(stdout, argv[0]);
+                return -1; // help shown
+            }
+            return -1; // do not allow mixing --help with other args
         } else if (strcmp(a, "--quiet") == 0) {
             opt->quiet = 1;
         } else if (strcmp(a, "--file") == 0) {
             if (i + 1 >= argc) {
-                // fprintf(stderr, "Missing value for --file\n");
                 return -1;
+            }
+            if (positional_count > 0 || saw_flag_file) {
+                return -1; // do not mix positional file/col with --file
             }
             opt->file_path = argv[++i];
+            saw_flag_file = 1;
         } else if (strcmp(a, "--col") == 0) {
             if (i + 1 >= argc) {
-                // fprintf(stderr, "Missing value for --col\n");
                 return -1;
             }
+            if (positional_count > 0 || saw_flag_col) {
+                return -1; // do not mix positional file/col with --col
+            }
             opt->col_name = argv[++i];
+            saw_flag_col = 1;
+        } else if (a[0] == '-') {
+            return -1; // unknown flag
         } else {
-            // fprintf(stderr, "Unknown argument: %s\n", a);
-            return -1;
+            // Positional mode: allow exactly two positional args total: file then column.
+            // Mixed mode with --quiet is allowed, but mixing with --file/--col is not.
+            if (saw_flag_file || saw_flag_col) {
+                return -1;
+            }
+
+            if (positional_count == 0) {
+                opt->file_path = a;
+            } else if (positional_count == 1) {
+                opt->col_name = a;
+            } else {
+                return -1; // too many positional args
+            }
+            positional_count++;
         }
     }
 
     if (!opt->file_path || !opt->col_name) {
-        // fprintf(stderr, "Missing required arguments.\n");
-        // usage(stderr, argv[0]);
         return -1;
     }
 
@@ -204,8 +230,6 @@ int main(int argc, char **argv) {
 
     FILE *fp = fopen(path, "rb");
     if (!fp) {
-        // perror("fopen");
-        // return (int)CSVSTAT_EIO;
         err = CSVSTAT_EIO;
         saved_errno = errno;
         goto cleanup;
@@ -214,8 +238,6 @@ int main(int argc, char **argv) {
 
     LineReader lr;
     if (line_reader_init(&lr, fp) != 0) {
-        // fprintf(stderr, "line_reader_init failed\n");
-        // fclose(fp);
         err = CSVSTAT_EIO;
         if (saved_errno == 0) saved_errno = errno;
         goto cleanup;
@@ -224,10 +246,6 @@ int main(int argc, char **argv) {
 
     CsvParser parser;
     if (csv_parser_init(&parser, 16) != 0) {
-        // fprintf(stderr, "csv_parser_init failed\n");
-        // line_reader_destroy(&lr);
-        // fclose(fp);
-        // return 4;
         err = CSVSTAT_ENOMEM;
         goto cleanup;
     }
@@ -239,25 +257,14 @@ int main(int argc, char **argv) {
     // ---- Read header (skip empty lines) ----
     CsvRowView header = (CsvRowView){0};
     size_t col_index = 0;
-    // int got_header = 0;
 
     for (;;) {
         int rc = line_reader_next(&lr, &line, &len);
         if (rc == 1) {
-            // fprintf(stderr, "Empty file: no header row\n");
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 5;
             err = CSVSTAT_EFORMAT;
             goto cleanup;
         }
         if (rc != 0) {
-            // fprintf(stderr, "Error reading header line\n");
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 6;
             err = CSVSTAT_EIO;
             if (saved_errno == 0) saved_errno = errno;
             goto cleanup;
@@ -270,36 +277,17 @@ int main(int argc, char **argv) {
         // `csv_split` modifies the line buffer, so we must cast away `const`.
         // This is safe because the underlying buffer is owned by LineReader and mutable.
         if (csv_split(&parser, (char *)line, &header) != 0) {
-            // fprintf(stderr, "csv_split failed on header\n");
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 7;
             err = CSVSTAT_EFORMAT;
             goto cleanup;
         }
         
         if (csv_find_column(&header, col_name, &col_index) != 0) {
-            // fprintf(stderr, "Column not found in header: %s\n", col_name);
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 8;
             err = CSVSTAT_ENOCOL;
             goto cleanup;
         }
 
-        // got_header = 1;
         break;
     }
-
-    // if (!got_header) {
-    //     fprintf(stderr, "Failed to read header\n");
-    //     csv_parser_destroy(&parser);
-    //     line_reader_destroy(&lr);
-    //     fclose(fp);
-    //     return 9;
-    // }
 
     // ---- Stream rows and accumulate stats ----
     Stats st;
@@ -317,11 +305,6 @@ int main(int argc, char **argv) {
         int rc = line_reader_next(&lr, &line, &len);
         if (rc == 1) break; // EOF
         if (rc != 0) {
-            // fprintf(stderr, "Error reading row\n");
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 10;
             err = CSVSTAT_EIO;
             if (saved_errno == 0) saved_errno = errno;
             goto cleanup;
@@ -332,11 +315,6 @@ int main(int argc, char **argv) {
         }
 
         if (csv_split(&parser, (char *)line, &row) != 0) {
-            // fprintf(stderr, "csv_split failed on row %zu\n", row_no);
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 11;
             err = CSVSTAT_EFORMAT;
             goto cleanup;
         }
@@ -346,7 +324,6 @@ int main(int argc, char **argv) {
         if (col_index >= row.nfields) {
             // Row has fewer fields than the header (v1 behavior: skip; optionally warn).
             missing_col++;
-            // fprintf(stderr, "Row %zu: missing column %s\n", row_no, col_name);
             if (!opt.quiet) {
                 fprintf(stderr, "Row %zu: missing column %s\n", row_no, col_name);
             }
@@ -367,16 +344,10 @@ int main(int argc, char **argv) {
         }
 
         if (stats_push(&st, x) != 0) {
-            // fprintf(stderr, "stats_push failed (unexpected)\n");
-            // csv_parser_destroy(&parser);
-            // line_reader_destroy(&lr);
-            // fclose(fp);
-            // return 12;
             err = CSVSTAT_EINTERNAL;
             goto cleanup;
         }
         
-        // printf("%s\n", row.fields[col_index]);
         numeric_ok++;
         row_no++;
     }
@@ -392,11 +363,6 @@ int main(int argc, char **argv) {
     double v = 0.0;
     size_t n = stats_count(&st);
 
-    // if (stats_min(&st, &v) == 0) {
-    //     printf("min: %.17g\n", v);
-    // } else {
-    //     printf("min: n/a\n");
-    // }
     if (!stats_has_data(&st)) {
         printf("min: n/a\n");
         printf("max: n/a\n");
@@ -436,27 +402,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    // if (stats_max(&st, &v) == 0) {
-    //     printf("max: %.17g\n", v);
-    // } else {
-    //     printf("max: n/a\n");
-    // }
-
-    // if (stats_mean(&st, &v) == 0) {
-    //     printf("mean: %.17g\n", v);
-    // } else {
-    //     printf("mean: n/a\n");
-    // }
-
-    // if (stats_stddev_sample(&st, &v) == 0) {
-    //     printf("stddev_sample: %.17g\n", v);
-    // } else {
-    //     printf("stddev_sample: n/a\n");
-    // }
-
-    // csv_parser_destroy(&parser);
-    // line_reader_destroy(&lr);
-    // fclose(fp);
     err = CSVSTAT_OK;
 
 cleanup:
@@ -470,7 +415,11 @@ cleanup:
         fclose(fp);
     }
 
-    // Use context strings that help we locate where the failure happened.
+    parser_init = 0;
+    lr_init = 0;
+    fp_open = 0;
+
+    // Use context strings that help us locate where the failure happened.
     if (err != CSVSTAT_OK) {
         switch (err) {
             case CSVSTAT_EARG:      return die(err, "cli");
