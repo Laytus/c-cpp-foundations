@@ -12,7 +12,7 @@ LDLIBS :=
 
 BUILD_DIR := build
 
-MAIN ?= main_v5
+MAIN ?= main
 APP := $(BUILD_DIR)/csvstat
 MAIN_SRC := app/$(MAIN).c
 MAIN_OBJ := $(BUILD_DIR)/$(MAIN).o
@@ -61,11 +61,34 @@ run: $(APP)
 	./$(APP) tests/input/basic.csv price
 
 test: $(APP)
+	@echo "==> basic (positional)"
 	./$(APP) tests/input/basic.csv price
+
+	@echo "==> invalid numerics (mixed positional + --quiet)"
 	./$(APP) tests/input/invalid.csv price --quiet
+
+	@echo "==> nan/inf/overflow (flag mode)"
 	./$(APP) --file tests/input/nan_inf.csv --col price --quiet
+
+	@echo "==> one valid sample"
 	./$(APP) --file tests/input/one_ok.csv --col price --quiet
+
+	@echo "==> zero valid samples"
 	./$(APP) --file tests/input/zero_ok.csv --col price --quiet
+
+	@echo "==> header only"
+	./$(APP) tests/input/header_only.csv price --quiet
+
+	@echo "==> missing cells / short row"
+	./$(APP) tests/input/missing_cells.csv price --quiet
+
+	@echo "==> spaces trimming"
+	./$(APP) tests/input/spaces.csv price --quiet
+
+	@echo "==> empty file should fail with format error"
+	! ./$(APP) tests/input/empty.csv price
+
+# "!" tells the shell this command is expected to fail.
 
 clean:
 	rm -rf $(BUILD_DIR)
