@@ -1,11 +1,28 @@
 #include "csv.h"
+#include "csvstat_assert.h"
 
 #include <stdlib.h>  // malloc, realloc, free
 #include <string.h>  // strcmp
 #include <ctype.h>   // isspace
 #include <limits.h>  // SIZE_MAX
 
+/*
+CsvParser invariants:
+- If cap == 0 then scratch == NULL
+- If cap > 0 then scratch != NULL
+*/
+int csv_parser_is_valid(const CsvParser *p) {
+    if (!p) return 0;
+
+    if (p->cap == 0 && p->scratch != NULL) return 0;
+    if (p->cap > 0 && p->scratch == NULL) return 0;
+
+    return 1;
+}
+
 static int ensure_ptr_capacity(CsvParser *p, size_t needed) {
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
+
     if (needed <= p->cap) return 0;
 
     size_t new_cap = (p->cap == 0) ? 16 : p->cap;
@@ -19,6 +36,8 @@ static int ensure_ptr_capacity(CsvParser *p, size_t needed) {
 
     p->scratch = tmp;
     p->cap = new_cap;
+
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
     return 0;
 }
 
@@ -34,14 +53,19 @@ int csv_parser_init(CsvParser *p, size_t initial_capacity) {
     if (!p->scratch) return -1;
 
     p->cap = initial_capacity;
+
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
     return 0;
 }
 
 void csv_parser_destroy(CsvParser *p) {
     if (!p) return;
+    
     free((void *)p->scratch);
     p->scratch = NULL;
     p->cap = 0;
+
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
 }
 
 /*
@@ -75,6 +99,8 @@ static char *trim_in_place(char *s) {
 
 int csv_split(CsvParser *p, char *line, CsvRowView *out) {
     if (!p || !line || !out) return -1;
+
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
 
     out->fields = NULL;
     out->nfields = 0;
@@ -119,6 +145,8 @@ int csv_split(CsvParser *p, char *line, CsvRowView *out) {
 
     out->fields = p->scratch;
     out->nfields = field_count;
+
+    CSVSTAT_ASSERT(csv_parser_is_valid(p));
     return 0;
 }
 

@@ -1,4 +1,5 @@
 #include "line_reader.h"
+#include "csvstat_assert.h"
 
 #include <stdlib.h>  // malloc, realloc, free
 #include <string.h>  // memset
@@ -31,9 +32,26 @@ typedef struct LineReader {
     char    *buf;     // owned internal buffer
     size_t  len;      // current line length (after stripping newline/CR)
     size_t  cap;      // buffer capacity in bytes
-    int     saw_oef;  // sticky EOF: once EOF is seen, further reads return EOF
+    int     saw_eof;  // sticky EOF: once EOF is seen, further reads return EOF
 } LineReader;
 */
+
+/*
+LineReader invariants:
+- If cap == 0 then buf == NULL
+- If cap > 0 then buf != NULL
+- len <= cap
+- fp may be NULL only after destroy()
+*/
+int line_reader_is_valid(const LineReader *lr) {
+    if (!lr) return 0;
+
+    if (lr->cap == 0 && lr->buf != NULL) return 0;
+    if (lr->cap > 0 && lr->buf == NULL) return 0;
+    if (lr->len > lr->cap) return 0;
+
+    return 1;
+}
 
 /*
 Ensure the internal buffer has at least `needed` bytes capacity.
@@ -42,6 +60,7 @@ Ensure the internal buffer has at least `needed` bytes capacity.
 Returns 0 on success, -1 on allocation failure or overflow.
 */
 static int ensure_capacity(LineReader *lr, size_t needed) {
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
     if (needed <= lr->cap) return 0;
 
     // Start with a small initial capacity to avoid tiny allocations. 
@@ -62,6 +81,8 @@ static int ensure_capacity(LineReader *lr, size_t needed) {
 
     lr->buf = tmp;
     lr->cap = new_cap;
+
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
     return 0;
 }
 
@@ -73,7 +94,7 @@ int line_reader_init(LineReader *lr, FILE *fp) {
     lr->buf = NULL;
     lr->len = 0;
     lr->cap = 0;
-    lr->saw_oef = 0;
+    lr->saw_eof = 0;
 
     // Allocate an initial buffer once; avoid first-call realloc churn.
     if (ensure_capacity(lr, 128) != 0) {
@@ -83,6 +104,8 @@ int line_reader_init(LineReader *lr, FILE *fp) {
 
     // Initialize buffer with '\0'
     lr->buf[0] = '\0';
+
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
     return 0;
 }
 
@@ -95,20 +118,25 @@ void line_reader_destroy(LineReader *lr) {
     lr->len = 0;
     lr->cap = 0;
 
-    // We doo not own `fp`, se we do not `fclose()`.
+    // We do not own `fp`, se we do not `fclose()`.
     lr->fp = NULL;
-    lr->saw_oef = 0;
+    lr->saw_eof = 0;
+
+    // After destroy, invariants still hold
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
 }
 
 int line_reader_next(LineReader *lr, const char **out_line, size_t *out_len) {
     if (!lr || !out_line) return -1;
+
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
 
     // Default outputs for non-success cases.
     *out_line = NULL;
     if (out_len) *out_len = 0;
 
     // If we have already seen EOF previously, behave consistently.
-    if (lr->saw_oef) {
+    if (lr->saw_eof) {
         return 1; // already at EOF
     }
 
@@ -139,7 +167,7 @@ int line_reader_next(LineReader *lr, const char **out_line, size_t *out_len) {
                 return -1; // I/O error
             }
 
-            lr->saw_oef = 1;
+            lr->saw_eof = 1;
 
             if (lr->len == 0) {
                 // True EOF with no buffered characters => no more lines.
@@ -176,6 +204,7 @@ int line_reader_next(LineReader *lr, const char **out_line, size_t *out_len) {
     *out_line = lr->buf;
     if (out_len) *out_len = lr->len;
 
+    CSVSTAT_ASSERT(line_reader_is_valid(lr));
     return 0;
 }
 
