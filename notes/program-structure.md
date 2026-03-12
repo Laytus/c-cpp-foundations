@@ -83,9 +83,9 @@
 **Estimated time:** **3-4 days**
 
 **Lessons**
-- [ ] 1. Compiler warnings as a design tool
-- [ ] 2. UB patterns and how to avoid them
-- [ ] 3. Assertions and contracts
+- [x] 1. Compiler warnings as a design tool
+- [x] 2. UB patterns and how to avoid them
+- [x] 3. Assertions and contracts
 - [ ] 4. Debug vs release builds
 - [ ] 5. Performance awareness (intro)
 - [ ] 6. Reading other people's C code
