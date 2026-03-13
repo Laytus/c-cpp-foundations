@@ -86,34 +86,80 @@
 - [x] 1. Compiler warnings as a design tool
 - [x] 2. UB patterns and how to avoid them
 - [x] 3. Assertions and contracts
-- [ ] 4. Debug vs release builds
-- [ ] 5. Performance awareness (intro)
-- [ ] 6. Reading other people's C code
+- [x] 4. Debug vs release builds
+- [x] 5. Performance awareness (intro)
+- [x] 6. Reading other people's C code
 
 ---
 
-## Phase 2 - Modern C++
+### Optional Path – C Systems Programming (Future)
 
-### Module F – Transition to Modern C++
+**Goal:**  Deepen low-level systems skills in C. This path is optional and can be completed later once C++ development goals are underway.
 
-**Goals:** Move from C to *safe, modern* C++.
+**Estimated time:** **3–4 weeks** (not required before C++)
 
-**Estimated time:** **5–6 weeks**
+**Topics / Projects**
+- Implement a hash table from scratch
+- Build a custom memory allocator (arena / pool allocator)
+- Implement a small HTTP server
+- Write Unix-style CLI utilities
+- Implement a JSON parser
+- Study high-quality C codebases (`musl`, `Redis`, `SQLite`)
+
+---
+
+## Phase 2 - Modern C++ (Fast Transition)
+
+### Module F – Modern C++ Core
+
+**Goals:** Learn the minimum modern C++ features required to start building real systems and numerical projects.
+
+**Estimated time:** **1–2 weeks**
 
 **Lessons**
-- C++ as "better C"
+- C++ vs C: what changes
 - References
 - RAII
-- `std::vector`, `std::string`
-- Value semantics
-- Ownership via types
-- Move semantics (conceptual)
-- CMake & real C++ projects
+- Constructors and destructors
+- `std::vector`
+- `std::string`
+- Range-based loops
+- `std::unique_ptr`
+- Basic templates (intro)
+
+---
+
+### Module G – C++ Project Fundations
+
+**Goal:** Leanr the tooling and architecture used in real C++ + projects.
+
+**Estimated time:** **1 week**
+
+**Lessons**
+- CMake fundamentals
+- Project structure for C++ libraries and executables
+- Separate compilation in C++
+- Using third-party libraries
+- Debug vs release builds in C++
+
+---
+
+### Module H – C++ Systems & Numerical Projects
+
+**Goal:** Apply C++ to real computational problems relevant to quant / ML systems.
+
+**Estimated time:** **3–4 weeks**
+
+**Projects**
+- Rewrite `csvstat` in C++ (RAII + STL)
+- Build a matrix / vector numerical library
+- Implement a limit-order book simulator
+- Implement a small neural network from scratch
 
 ---
 
 | Phase | Time |
 | ----------------- | ----------------- |
-| C Foundations (A–E) | ~3 weeks |
-| Modern C++ | ~5-6 weeks |
-| Total core program | ~2-2.5 weeks |
+| C Foundations (A–E) | ~6–8 weeks |
+| Optional C System Path | ~3–4 weeks |
+| Modern C++ Core + Projects | ~5-6 weeks |
