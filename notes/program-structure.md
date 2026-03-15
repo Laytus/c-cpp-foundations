@@ -117,15 +117,15 @@
 **Estimated time:** **1–2 weeks**
 
 **Lessons**
-- C++ vs C: what changes
-- References
-- RAII
-- Constructors and destructors
-- `std::vector`
-- `std::string`
-- Range-based loops
-- `std::unique_ptr`
-- Basic templates (intro)
+- [x] 1. C++ vs C: what changes
+- [x] 2. References
+- [x] 3. RAII
+- [ ] 4. Constructors and destructors
+- [ ] 5. `std::vector`
+- [ ] 6. `std::string`
+- [ ] 7. Range-based loops
+- [ ] 8. `std::unique_ptr`
+- [ ] 9. Basic templates (intro)
 
 ---
 
