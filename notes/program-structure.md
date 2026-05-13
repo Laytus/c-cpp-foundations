@@ -120,18 +120,18 @@
 - [x] 1. C++ vs C: what changes
 - [x] 2. References
 - [x] 3. RAII
-- [ ] 4. Constructors and destructors
-- [ ] 5. `std::vector`
-- [ ] 6. `std::string`
-- [ ] 7. Range-based loops
-- [ ] 8. `std::unique_ptr`
-- [ ] 9. Basic templates (intro)
+- [x] 4. Constructors and destructors
+- [x] 5. `std::vector`
+- [x] 6. `std::string`
+- [x] 7. Range-based loops
+- [x] 8. `std::unique_ptr`
+- [x] 9. Templates (intro)
 
 ---
 
 ### Module G – C++ Project Fundations
 
-**Goal:** Leanr the tooling and architecture used in real C++ + projects.
+**Goal:** Learn the tooling and architecture used in real C++ + projects.
 
 **Estimated time:** **1 week**
 
